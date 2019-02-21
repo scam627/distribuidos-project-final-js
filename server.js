@@ -1,96 +1,58 @@
 // Usa Ecmascript6
 "use strict";
 
-// Loading dependencies
 const express = require("express");
 const bodyParser = require("body-parser");
-const request = require("request");
-// App instand
+
 const app = express();
+
+app.use(express.static(__dirname + "/cliente"));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(express.static(__dirname + "/client/"));
 
-var listServers = [];
+var listPages = [];
+var id = 0;
 
-app.get("/add", (req, res) => {
-  if (req.query.host !== undefined && req.query.port !== undefined) {
-    const data = {
-      host: req.query.host,
-      port: req.query.port,
-      docs: []
-    };
-    let state = false;
-    listServers.forEach(server => {
-      state = state
-        ? state
-        : data.host == server.host && data.port == server.port;
-    });
-    if (!state) {
-      let options = {
-        url: "http://" + data.host + ":" + data.port + "/status",
-        method: "GET",
-        jar: true
-      };
-      request(options, (err, resp, body) => {
-        if (!err && resp.statusCode == 200) {
-          listServers.push(data);
-          res.send({ success: true, err: null, msg: "Added" });
-        } else {
-          res.send({ success: true, err: null, msg: "Server not found" });
-        }
-      });
-    } else res.send({ success: true, err: null, msg: "Server already added" });
-  } else res.send({ success: false, err: true, msg: ":(" });
+app.get("/listPages", (req, res) => {
+  res.send(listPages);
 });
 
-app.get("/set", (req, res) => {
-  const data = {
-    host: req.query.host,
-    port: req.query.port,
-    doc: req.query.doc,
-    page: req.query.page
-  };
-  listServers.forEach(server => {
-    if (data.host == server.host && data.port == server.port) {
-      if (listServers.docs.lenght) {
-        let state = false;
-        listServers.docs.forEach(doc => {
-          if (doc.name == doc) {
-            listServers.docs.pages.push(data.page); //falta validar que la pagina de ese documento no se de otro server
-            state = true;
-          }
-        });
-        if (!state)
-          listServers.docs.push({ name: data.doc, pages: [doc.page] });
-      } else listServers.docs.push({ name: data.doc, pages: [doc.page] });
+app.get("/insertPage", (req, res) => {
+  if (req.query.name != undefined) {
+    const i = id;
+    id = id + 1;
+
+    const data = {
+      id: i,
+      name: req.query.name,
+      status: true
+    };
+    listPages.push(data);
+    res.send({ success: true });
+  } else {
+    res.send({ success: false });
+  }
+});
+
+app.get("/changestatus", (req, res) => {
+  const idd = req.query.id;
+  console.log(idd);
+  for (let i = 0; i < listPages.length; i++) {
+    //console.log(i);
+    if (listPages[i].id == idd) {
+      //console.log(i);
+      listPages[i].status = !listPages[i].status;
     }
-  });
+  }
   res.send({ success: true });
 });
 
-app.get("/server", (req, res) => {
-  const data = {
-    page: req.query.page,
-    doc: req.query.doc
-  };
-  listServers.forEach(server => {
-    server.docs.forEach(doc => {
-      if (data.doc == doc.name) {
-        doc.pages.forEach(page => {
-          if (page == data.page)
-            res.send({
-              success: true,
-              host: listServers.host,
-              port: listServers.port
-            });
-        });
-      }
-    });
-  });
+app.get("/status", (req, res) => {
+  res.send({ succefull: true });
 });
 
-app.listen("8080", () => {
+const port = process.env.PORT || 3030;
+app.listen(port, () => {
   console.log("Server is running...");
 });

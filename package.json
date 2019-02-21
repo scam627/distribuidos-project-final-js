@@ -1,18 +1,16 @@
 {
-  "name": "proyecto-final-distribuidos",
+  "name": "distribuidosfinal",
   "version": "1.0.0",
-  "description": "Proyecto final de sistemas distribuidos universidad tecnologica de pereira",
+  "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "scam627",
-  "license": "ISC",
+  "author": "jofemago",
+  "license": "MIT",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "express": "^4.16.4",
-    "nodemon": "^1.18.7",
-    "request": "^2.88.0"
-  },
-  "devDependencies": {}
+    "nodemon": "^1.18.10"
+  }
 }
